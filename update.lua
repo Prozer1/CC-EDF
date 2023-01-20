@@ -1,4 +1,4 @@
-m = peripheral.wrap("top")
+m = peripheral.find("monitor") or error("No monitor attached", 0)
 while true do
     local event, side, xPos, yPos = os.pullEvent("monitor_touch")
 

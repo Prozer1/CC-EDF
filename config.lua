@@ -1,5 +1,5 @@
 -- Version
-local version = 1.4
+local version = 1.5
 --client list
 local client_list = {"Shorty", "Mr", "Prozer", "Lord", "Test", "Creunix", "Blyatman", "Yolo"}
 local limits = {Shorty=11000,Mr=2200, Prozer=3300, Lord=4400, Test=123456789000, Creunix=99000, Blyatman=123456, Yolo=32154}

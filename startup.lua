@@ -65,8 +65,12 @@ function scan_network()
                 detector.setTransferRateLimit(0)
             end
         else if name == "top" then
-            local modem = peripheral.find("modem") or error("No modem attached", 0)
+            modem = peripheral.find("modem") or error("No modem attached", 0)
             modem.open(66)
+        else if name == "left" then
+            printer = peripheral.find("printer") or error("No printer attached", 0)
+            modem.open(68)
+        end
         end
         end
     end
@@ -114,7 +118,7 @@ function check_data()
     end
 end
 
-function pullEvents()
+function pull_events()
     repeat
         event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
     until channel == 66
@@ -123,11 +127,34 @@ function pullEvents()
     total_client = config.update_total(total_client)
 end
 
+function pull_event_print()
+    repeat
+        event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+    until channel == 68
+    total_client = config.update_total(total_client)
+    
+    ink = printer.getInkLevel()
+    paper = printer.getPaperLevel()
+    if ink > 0 and paper > 0 then
+        printer.newPage()
+        printer.setCursorPos(1,1)
+        printer.write("Conso par client EDF.")
+        printer.setPageTitle("CONSO EDF - CONFIDENTIEL")
+        for i, client in pairs(client_list) do
+            printer.setCursorPos(1,i+2)
+            printer.write(client..": "..total_client[client].."RF")
+        end
+        printer.endPage()
+    else
+        print("Cannot print")
+    end
+end
+
 setup_config()
 scan_network()
 term.clear()
 term.setCursorPos(1,1)
 term.setTextColor(colors.red)
 term.write("Currently running EDF V"..version)
-parallel.waitForAny(check_data, pullEvents)
+parallel.waitForAny(check_data, pull_events, pull_event_print)
 shell.run("reboot")
