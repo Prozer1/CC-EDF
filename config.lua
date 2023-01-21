@@ -3,7 +3,7 @@ local version = 1.5
 --client list
 local client_list = {"Shorty", "Mr", "Prozer", "Lord", "Test", "Creunix", "Blyatman", "Yolo"}
 local limits = {Shorty=11000,Mr=2200, Prozer=3300, Lord=4400, Test=123456789000, Creunix=99000, Blyatman=123456, Yolo=32154}
-local peripheral_number = {Shorty=1,Mr=8,Prozer=9,Lord=5, Test=0, Creunix=4, Blyatman=2, Yolo=3}
+local peripheral_number = {Shorty=1,Mr=8,Prozer=9,Lord=5, Test=0, Creunix=4, Blyatman=2, Yolo=12}
 local client_color = {Shorty=colors.gray, Mr=colors.blue, Prozer=colors.red, Lord=colors.orange, Test=colors.yellow, Creunix=colors.lightBlue, Blyatman=colors.pink, Yolo=colors.brown}
 local total_client = {}
 
@@ -21,17 +21,21 @@ function config.load_total()
     sr = fs.open("total.txt", "r")
     if sr == nil then
         sw = fs.open("total.txt", "w")
-        return total_client
-    end
-    for i, client in pairs(client_list) do
-        name = sr.readLine()
-        value = sr.readLine()
-        if value == nil then
-            value = 0
+        for i, client in pairs(client_list) do
+            total_client[client] = 0
         end
-        total_client[client] = tonumber(value)
+        sw.close()
+    else
+        for i, client in pairs(client_list) do
+            name = sr.readLine()
+            value = sr.readLine()
+            if value == nil then
+                value = 0
+            end
+            total_client[client] = tonumber(value)
+        end
+        sr.close()
     end
-    sr.close()
     return total_client
 end
 
