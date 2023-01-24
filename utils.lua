@@ -6,6 +6,7 @@ function utils.clear(m)
 end
 
 function utils.draw_text(m, x, y, text, text_color, bg_color, length)
+    text = tostring(text)
     if length == nil then length = #text end
     m.setBackgroundColor(bg_color)
     m.setCursorPos(x,y)
@@ -32,7 +33,6 @@ function utils.progress_bar(m, x, y, length, minVal, maxVal, bar_color, bg_color
     utils.draw_line(m, x, y, barSize, bar_color) --progress so far
 end
 
-
 function utils.get_percent_color(percent)
     if percent < 25 then
         return colors.lime
@@ -47,6 +47,56 @@ function utils.get_percent_color(percent)
     end
     end
     end
+end
+
+function utils.load_file(file)
+    local content = {}
+    sr = fs.open(file, "r")
+    if sr == nil then
+        sw = fs.open(file, "w")
+        sw.close()
+    else
+        local key, val = nil, nil
+        repeat
+            data_from_file = sr.readLine()
+            if data_from_file ~= nil then
+                if string.match(data_from_file, "key:") then
+                    key = utils.split(data_from_file, ":")[2]
+                else if string.match(data_from_file, "val:") then
+                    val = utils.split(data_from_file, ":")[2]
+                end
+                end
+                if key ~= nil and val ~= nil then
+                    content[key] = val
+                    key, val = nil, nil
+                end
+            end
+
+        until data_from_file==nil
+        sr.close()
+    end
+    return content
+end
+
+function utils.update_file(file, key_val_table)
+    sw = fs.open(file, "w")
+    for key, val in pairs(key_val_table) do
+        sw.writeLine("key:"..tostring(key))
+        sw.writeLine("val:"..tostring(val))
+    end
+    sw.close()
+    return ""
+end
+
+function utils.split (inputstr, sep)
+    if sep == nil then
+            sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+            table.insert(t, str)
+    end
+    return t
 end
 
 function utils.get_rf_flow(energy_flow)

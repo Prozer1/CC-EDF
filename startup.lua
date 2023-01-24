@@ -36,18 +36,6 @@ function setup_config()
     version, client_list, limits, peripheral_number = config.get_clients()
 end
 
-update_pastebin()
-update_import()
-
-m = peripheral.find("monitor")
-names = peripheral.getNames()
-detectors = {}
-mX, mY = m.getSize()
-local total_client = config.load_total()
-
-utils.clear(m)
-m.setTextScale(1)
-
 function scan_network()
     for i, name in pairs(names) do
         if string.find(name, "energyDetector_") then
@@ -150,12 +138,24 @@ function pull_event_print()
     end
 end
 
+update_pastebin()
+update_import()
+
+m = peripheral.find("monitor")
+names = peripheral.getNames()
+detectors = {}
+mX, mY = m.getSize()
+local total_client = config.load_total()
+
+utils.clear(m)
+m.setTextScale(1)
+
 setup_config()
 scan_network()
 term.clear()
 term.setCursorPos(1,1)
 term.setTextColor(colors.red)
-term.write("Currently running EDF V"..version)
+term.write("Currently running EDF v"..version)
 term.setCursorPos(1,2)
 parallel.waitForAny(check_data, pull_events, pull_event_print)
 shell.run("reboot")
