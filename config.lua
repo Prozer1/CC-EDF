@@ -1,16 +1,15 @@
--- Version
-local version = 1.5
 --client list
-local client_list = {"Shorty", "Mr", "Prozer", "Lord", "Test", "Creunix", "Blyatman", "Yolo"}
-local limits = {Shorty=11000,Mr=2200, Prozer=3300, Lord=4400, Test=123456789000, Creunix=99000, Blyatman=123456, Yolo=32154}
-local peripheral_number = {Shorty=1,Mr=8,Prozer=9,Lord=5, Test=0, Creunix=4, Blyatman=2, Yolo=12}
-local client_color = {Shorty=colors.gray, Mr=colors.blue, Prozer=colors.red, Lord=colors.orange, Test=colors.yellow, Creunix=colors.lightBlue, Blyatman=colors.pink, Yolo=colors.brown}
+local global_db = dofile('global_db')
+local client_list = global_db["client_list"]
+local limits = global_db["rf_limits"]
+local peripheral_number = global_db["energy_detector_number"]
+local client_color = global_db["client_display_color"]
 local total_client = {}
 
 local config = {}
 
 function config.get_clients()
-    return version, client_list, limits, peripheral_number
+    return client_list, limits, peripheral_number
 end
 
 function config.get_client_color(client_name)

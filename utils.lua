@@ -99,6 +99,13 @@ function utils.split (inputstr, sep)
     return t
 end
 
+function utils.contains(list, x)
+	for i, v in pairs(list) do
+		if v == x then return true, i end
+	end
+	return false, 0
+end
+
 function utils.get_rf_flow(energy_flow)
  
     if energy_flow < 1000 then

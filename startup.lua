@@ -3,6 +3,7 @@ function update_pastebin()
     local startup_link = "gERMbWFV"
     local config_link = "SsijQ8Pw"
     local utils_link = "q420mMBY"
+    local global_db_link = "cdCqpcGm"
 
     -- CHECK DEPENDENCY FILES --
     if fs.exists("startup") then
@@ -16,10 +17,15 @@ function update_pastebin()
     if fs.exists("utils") then
         fs.delete("utils")
     end
+
+    if fs.exists("global_db") then
+        fs.delete("global_db")
+    end
     -- GET PASTEBIN --
     shell.run("pastebin get "..startup_link.." startup")
     shell.run("pastebin get "..config_link.." config")
     shell.run("pastebin get "..utils_link.." utils")
+    shell.run("pastebin get "..global_db_link.." global_db")
 end
 
 -- IMPORT DEPS --
@@ -28,12 +34,12 @@ function update_import()
     utils = require("utils")
 end
 
-local version, client_list, limits, peripheral_number, i, name
+local client_list, limits, peripheral_number, i, name
 local event, side, channel, replyChannel, message, distance
 
 -- SETUP CONFIG -- 
 function setup_config()
-    version, client_list, limits, peripheral_number = config.get_clients()
+    client_list, limits, peripheral_number = config.get_clients()
 end
 
 function scan_network()
@@ -43,10 +49,11 @@ function scan_network()
             client_found = false
             detector = peripheral.wrap(name)
             for j, client in pairs(client_list) do
-                if number == peripheral_number[client] then
+                local contains, index =  utils.contains(peripheral_number[client], number)
+                if contains then
                     detectors[client] = detector
                     client_found = true
-                    detector.setTransferRateLimit(limits[client])
+                    detector.setTransferRateLimit(limits[client][index])
                 end
             end
             if client_found == false then
@@ -68,7 +75,7 @@ function check_data()
     local counter = 0
     while true do
         current_line = 1
-        utils.draw_text(m, 1,current_line, "Client -> Live Conso    |         Conso %age         |   Limits   | Total", colors.gray, colors.lightBlue, mX)
+        utils.draw_text(m, 1,current_line, "Client -> Live Conso     |         Conso %age         |   Limits   | Total", colors.gray, colors.lightBlue, mX)
         for i, client in pairs(client_list) do
             current_line = current_line+2
             if detectors[client] == nil then
@@ -109,7 +116,7 @@ end
 function pull_events()
     repeat
         event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    until channel == 66
+    until (channel == 66)
     update_pastebin()
     update_import()
     total_client = config.update_total(total_client)
@@ -118,7 +125,7 @@ end
 function pull_event_print()
     repeat
         event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    until channel == 68
+    until (channel == 68)
     total_client = config.update_total(total_client)
     
     ink = printer.getInkLevel()
@@ -141,11 +148,13 @@ end
 update_pastebin()
 update_import()
 
+-- Version
+local version = 1.6
 m = peripheral.find("monitor")
 names = peripheral.getNames()
 detectors = {}
 mX, mY = m.getSize()
-local total_client = config.load_total()
+total_client = config.load_total()
 
 utils.clear(m)
 m.setTextScale(1)
